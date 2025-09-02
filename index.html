@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Odpytka językowa</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      padding: 2em;
+      text-align: center;
+    }
+    button {
+      padding: 1em 2em;
+      font-size: 1.2em;
+      margin-top: 1em;
+      cursor: pointer;
+    }
+    #hint, #answer {
+      font-size: 1.5em;
+      margin: 1em 0;
+    }
+    #countdown {
+      font-size: 2em;
+      color: #555;
+      margin: 1em 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Odpytka językowa 🎧</h1>
+  <div id="hint">Kliknij „Zacznij”, aby rozpocząć</div>
+  <div id="countdown"></div>
+  <div id="answer"></div>
+  <button id="startBtn" onclick="startCycle()">▶️ Zacznij</button>
+
+  <script>
+    const words = [
+    // poziom 1
+    { hint: "dłoń", answer: "hand" },
+
+{ hint: "fryzjer", answer: "hairdresser" },
+
+{ hint: "znajomy (w kontekście osoby, którą się zna powierzchownie)", answer: "acquaintance" },
+{ hint: "znajomy (w kontekście kolegi)", answer: "friend" },
+
+{ hint: "wagon (w kontekście pociągu)", answer: "carriage" },
+{ hint: "wagon (w kontekście transportu towarowego)", answer: "freight car" },
+
+{ hint: "wzrok", answer: "sight" },
+
+{ hint: "zdarzenie (w kontekście czegoś, co się wydarzyło)", answer: "event" },
+{ hint: "zdarzenie (w kontekście incydentu)", answer: "incident" },
+
+{ hint: "huśtawka (w kontekście zabawki)", answer: "swing" },
+{ hint: "huśtawka (w kontekście emocji)", answer: "mood swing" },
+
+{ hint: "świeca", answer: "candle" },
+
+{ hint: "płot", answer: "fence" },
+
+{ hint: "uroda", answer: "beauty" },
+
+{ hint: "ławka", answer: "bench" },
+
+{ hint: "farba", answer: "paint" },
+
+{ hint: "mógł (czas przeszły)", answer: "could" },
+
+{ hint: "przy (w kontekście lokalizacji)", answer: "near" },
+{ hint: "przy (w kontekście bliskości fizycznej)", answer: "by" },
+
+{ hint: "nieźle", answer: "not bad" },
+
+{ hint: "w drodze", answer: "on the way" },
+
+{ hint: "od razu", answer: "right away" },
+
+{ hint: "prosić (w kontekście pytania)", answer: "ask" },
+{ hint: "prosić (w kontekście formalnej prośby)", answer: "request" },
+
+{ hint: "jechać na sygnale", answer: "drive with sirens" },
+
+{ hint: "drewniany", answer: "wooden" },
+
+{ hint: "traktować (w kontekście zachowania wobec kogoś)", answer: "treat" },
+{ hint: "traktować (w kontekście interpretacji)", answer: "consider" },
+
+{ hint: "uwielbiać (w kontekście emocjonalnym)", answer: "adore" },
+{ hint: "uwielbiać (w kontekście lubienia)", answer: "love" },
+
+{ hint: "posprzątać", answer: "clean up" },
+
+{ hint: "ładny (w kontekście wyglądu)", answer: "pretty" },
+{ hint: "ładny (w kontekście estetyki)", answer: "nice-looking" },
+
+{ hint: "wysoki", answer: "tall" },
+
+{ hint: "niski", answer: "short" },
+
+{ hint: "chudy (w kontekście sylwetki)", answer: "thin" },
+{ hint: "chudy (w kontekście bardzo szczupły)", answer: "skinny" },
+
+{ hint: "smaczny (w kontekście jedzenia)", answer: "tasty" },
+{ hint: "smaczny (w kontekście wyjątkowo dobry)", answer: "delicious" },
+
+{ hint: "niesmaczny (w kontekście jedzenia)", answer: "bad-tasting" },
+{ hint: "niesmaczny (w kontekście braku gustu)", answer: "tasteless" },
+
+{ hint: "chory (w kontekście fizycznym)", answer: "ill" },
+{ hint: "chory (w kontekście ogólnym)", answer: "sick" },
+
+{ hint: "słaby", answer: "weak" },
+
+{ hint: "spragniony", answer: "thirsty" },
+
+{ hint: "miły (w kontekście uprzejmości)", answer: "kind" },
+{ hint: "miły (w kontekście przyjemny)", answer: "nice" },
+
+{ hint: "niemiły (w kontekście zachowania)", answer: "mean" },
+{ hint: "niemiły (w kontekście braku uprzejmości)", answer: "unfriendly" },
+
+{ hint: "okropny (w kontekście jakości)", answer: "awful" },
+{ hint: "okropny (w kontekście wrażenia)", answer: "terrible" },
+
+{ hint: "ciocia", answer: "aunt" },
+
+{ hint: "podwórko", answer: "yard" },
+
+{ hint: "fotel", answer: "armchair" },
+
+{ hint: "blisko", answer: "close to" },
+
+{ hint: "ubrać się", answer: "get dressed" },
+
+{ hint: "zmęczony", answer: "tired" },
+
+{ hint: "czekać", answer: "wait" },
+
+{ hint: "każdy (w kontekście jednostki)", answer: "everyone" },
+{ hint: "wszyscy (w kontekście grupy)", answer: "everyone" },
+
+{ hint: "po", answer: "after" },
+
+{ hint: "przed", answer: "before" },
+
+{ hint: "już", answer: "already" },
+
+    // poziom 2
+
+  { hint: "wypadek", answer: "accident" },
+
+  { hint: "karuzela", answer: "merry-go-round" },
+
+  { hint: "zjazd (w kontekście drogi)", answer: "descent" },
+  { hint: "zjazd (w kontekście spotkania)", answer: "gathering" },
+
+  { hint: "stan (w kontekście administracyjnym)", answer: "state" },
+  { hint: "stan (w kontekście fizycznym lub emocjonalnym)", answer: "condition" },
+
+  { hint: "szczegół", answer: "detail" },
+
+  { hint: "dokumenty", answer: "documents" },
+
+  { hint: "rów", answer: "ditch" },
+
+  { hint: "towar (w kontekście handlu)", answer: "goods" },
+  { hint: "towar (w kontekście produktu)", answer: "commodity" },
+
+  { hint: "miejscowość (w kontekście geograficznym)", answer: "locality" },
+  { hint: "miejscowość (w kontekście miasta lub wsi)", answer: "town" },
+
+  { hint: "rozwój (w kontekście postępu)", answer: "development" },
+  { hint: "rozwój (w kontekście osobistym)", answer: "growth" },
+
+  { hint: "nastrój", answer: "mood" },
+
+  { hint: "bukiet", answer: "bouquet" },
+
+  { hint: "przesunąć się", answer: "move aside" },
+
+  { hint: "cecha (w kontekście charakteru)", answer: "trait" },
+  { hint: "cecha (w kontekście właściwości)", answer: "feature" },
+
+  { hint: "blok mieszkalny", answer: "apartment block" },
+
+  { hint: "brzeg morza", answer: "seashore" },
+
+  { hint: "całkowity (w kontekście ilości)", answer: "total" },
+  { hint: "całkowity (w kontekście zakończenia)", answer: "complete" },
+
+  { hint: "woleć", answer: "prefer" },
+
+  { hint: "znajdować się", answer: "be located" },
+
+  { hint: "dokładnie", answer: "exactly" },
+
+  { hint: "z osobna", answer: "separately" },
+
+  { hint: "wyjmować", answer: "take out" },
+
+  { hint: "znaczyć (w kontekście definicji)", answer: "mean" },
+  { hint: "znaczyć (w kontekście mieć znaczenie)", answer: "matter" },
+
+  { hint: "porządnie (przyzwoicie)", answer: "decently" },
+
+  { hint: "konkretny (w kontekście precyzyjny)", answer: "specific" },
+  { hint: "konkretny (w kontekście materialny)", answer: "concrete" },
+
+  { hint: "złamać nogę", answer: "break a leg" },
+
+  { hint: "spojrzeć przed siebie", answer: "look ahead" },
+
+  { hint: "zawołać (w kontekście przywołania)", answer: "call" },
+  { hint: "zawołać (w kontekście krzyku)", answer: "shout" },
+
+  { hint: "przyjechać", answer: "arrive" },
+
+  { hint: "dojechać (w kontekście dotarcia środkiem transportu)", answer: "reach (by transport)" },
+
+  { hint: "posunąć się by zrobić przejście", answer: "move to make way" },
+
+  { hint: "rozpieszczać (w kontekście dzieci)", answer: "spoil" },
+  { hint: "rozpieszczać (w kontekście rozpieszczania kogoś)", answer: "pamper" },
+
+  { hint: "znosić (w kontekście cierpienia)", answer: "endure" },
+  { hint: "znosić (w kontekście tolerowania)", answer: "put up with" },
+
+  { hint: "dotyczyć (w kontekście tematu)", answer: "concern" },
+  { hint: "dotyczyć (w kontekście relacji)", answer: "relate to" },
+
+  { hint: "trudny (w kontekście wymagający)", answer: "difficult" },
+  { hint: "trudny (w kontekście ciężki)", answer: "hard" },
+
+  { hint: "rozwiązać problem", answer: "solve a problem" },
+
+  { hint: "przytulny", answer: "cozy" },
+
+  { hint: "ciężki", answer: "heavy" },
+
+  { hint: "podnieść", answer: "lift" },
+
+  { hint: "pachnący", answer: "fragrant" },
+
+  { hint: "na wsi", answer: "in the countryside" },
+
+  { hint: "paragon", answer: "receipt" },
+
+  { hint: "mimo", answer: "despite" },
+
+  { hint: "pukać", answer: "knock" },
+
+  { hint: "męczący", answer: "tiring" },
+
+  { hint: "przyjazny", answer: "friendly" },
+
+  { hint: "lekki", answer: "light" },
+
+  { hint: "nowoczesny", answer: "modern" },
+
+  { hint: "szeroki", answer: "wide" },
+
+  { hint: "głęboki", answer: "deep" },
+
+  { hint: "kwadratowy", answer: "square" },
+
+  { hint: "krzywy", answer: "crooked" },
+
+  { hint: "niegrzeczny", answer: "rude" },
+
+  { hint: "mądry", answer: "wise" },
+  { hint: "rozsądny", answer: "sensible" },
+
+  { hint: "scena (w kontekście teatru)", answer: "stage" },
+  { hint: "scena (w kontekście wydarzenia)", answer: "scene" },
+
+  { hint: "zdecydować", answer: "decide" },
+
+  { hint: "przed (w kontekście lokalizacji)", answer: "in front of" },
+  { hint: "przed (w kontekście czasu)", answer: "before" },
+
+  { hint: "gry planszowe", answer: "board games" },
+
+  { hint: "góry", answer: "mountains" },
+
+  { hint: "zajęcia (w kontekście lekcji)", answer: "classes" },
+  { hint: "zajęcia (w kontekście aktywności)", answer: "activities" },
+
+  { hint: "malować", answer: "paint" },
+
+  { hint: "przegrać", answer: "lose" },
+
+  { hint: "również", answer: "also" },
+
+  { hint: "tłum", answer: "crowd" },
+
+  { hint: "kredki", answer: "crayons" },
+
+    
+
+    // poziom 3
+      { hint: "rówieśnik", answer: "peer" },
+
+      { hint: "wjazd na autostradę (miejsce fizyczne)", answer: "motorway entrance" },
+      { hint: "wjazd na autostradę (czynność)", answer: "entering the motorway" },
+
+      { hint: "potomstwo (dzieci)", answer: "offspring" },
+
+      { hint: "postanawiać (podjąć decyzję)", answer: "decide" },
+      { hint: "postanawiać (formalnie, np. uchwałą)", answer: "resolve" },
+
+      { hint: "przesłuchanie (policyjne)", answer: "interrogation" },
+      { hint: "przesłuchanie (sądowe)", answer: "hearing" },
+
+      { hint: "dyscyplinowanie (dziecka)", answer: "disciplining" },
+      { hint: "dyscyplinowanie (pracownika)", answer: "reprimanding" },
+
+      { hint: "stanowisko (w pracy)", answer: "position" },
+      { hint: "stanowisko (punkt widzenia)", answer: "stance / viewpoint" },
+      { hint: "stanowisko (miejsce fizyczne)", answer: "post / station" },
+
+      { hint: "środek przeciwbólowy (lek)", answer: "painkiller" },
+
+      { hint: "przełom (w nauce)", answer: "breakthrough" },
+      { hint: "przełom (zmiana sytuacji)", answer: "turning point" },
+
+      { hint: "spontaniczność (cecha charakteru)", answer: "spontaneity" },
+
+      { hint: "bójka (uliczna)", answer: "brawl" },
+      { hint: "bójka (szkolna)", answer: "fight" },
+
+      { hint: "powłoka (zewnętrzna warstwa)", answer: "coating" },
+      { hint: "powłoka (np. biologiczna)", answer: "layer" },
+      { hint: "powłoka (informatyczna)", answer: "shell" },
+
+      { hint: "teściowa (matka współmałżonka)", answer: "mother-in-law" },
+
+      { hint: "przeprowadzać (działanie)", answer: "carry out (an action)" },
+      { hint: "przeprowadzać (się)", answer: "move house" },
+      { hint: "przeprowadzać (eksperyment)", answer: "conduct (an experiment)" },
+
+      { hint: "budżet (finanse państwa)", answer: "budget" },
+      { hint: "budżet (domowy)", answer: "household budget" },
+
+      { hint: "zbieg okoliczności (nieplanowane zdarzenie)", answer: "coincidence" },
+
+      { hint: "poprawa (stanu zdrowia)", answer: "recovery" },
+      { hint: "poprawa (wyników)", answer: "improvement" },
+      { hint: "poprawa (jakości)", answer: "enhancement" },
+
+      { hint: "szczelnie zamknięty (np. słoik)", answer: "tightly closed" },
+      { hint: "szczelnie zamknięty (np. pomieszczenie)", answer: "airtight" },
+
+      { hint: "przyzwyczajony (do czegoś)", answer: "used to" },
+      { hint: "przyzwyczajony (zwykle robiący coś)", answer: "accustomed to" },
+
+      { hint: "jednoznaczny (bez wątpliwości)", answer: "unambiguous" },
+      { hint: "jednoznaczny (jasno określony)", answer: "clear-cut" },
+
+      { hint: "związany z czymś (tematycznie)", answer: "related to" },
+      { hint: "związany z czymś (powiązany formalnie)", answer: "associated with" },
+
+      { hint: "pewnie (zdecydowanie)", answer: "surely" },
+      { hint: "pewnie (z dużym prawdopodobieństwem)", answer: "probably" },
+      { hint: "pewnie (z przekonaniem)", answer: "definitely" },
+
+      { hint: "porządnie (starannie)", answer: "carefully" },
+      { hint: "porządnie (solidnie)", answer: "properly" },
+
+      { hint: "przepisowy (zgodny z przepisami)", answer: "by the rules" },
+      { hint: "przepisowy (np. strój)", answer: "regulation" },
+
+      { hint: "żądać (domagać się)", answer: "demand" },
+      { hint: "żądać (formalnie)", answer: "require" },
+      { hint: "żądać (groźnie)", answer: "insist on" },
+
+      { hint: "paskudny (obrzydliwy)", answer: "nasty" },
+      { hint: "paskudny (nieprzyjemny)", answer: "awful" },
+      { hint: "paskudny (np. pogoda)", answer: "horrible" },
+
+      { hint: "upierać się (przy swoim)", answer: "insist" },
+      { hint: "upierać się (nie ustępować)", answer: "persist" },
+
+      { hint: "przyszły (czas)", answer: "future" },
+      { hint: "przyszły (np. mąż)", answer: "prospective" },
+
+      { hint: "tęsknić (za kimś)", answer: "miss (someone)" },
+      { hint: "tęsknić (za czymś)", answer: "long for" },
+
+      { hint: "radzić sobie (z problemem)", answer: "cope" },
+      { hint: "radzić sobie (w trudnej sytuacji)", answer: "manage" },
+
+      { hint: "stwierdzać coś (fakt)", answer: "state something" },
+      { hint: "stwierdzać coś (oficjalnie)", answer: "declare" },
+
+      { hint: "zaniepokojony (czymś)", answer: "worried" },
+      { hint: "zaniepokojony (zestresowany)", answer: "concerned" },
+
+      { hint: "dotychczasowy (do tej pory)", answer: "so far" },
+      { hint: "dotychczasowy (poprzedni)", answer: "previous" },
+
+      { hint: "ułożony (np. plan)", answer: "arranged" },
+      { hint: "ułożony (osoba, spokojna)", answer: "well-behaved" },
+
+      { hint: "ukończyć studia (uzyskać dyplom)", answer: "graduate" },
+
+      { hint: "różny (wieloraki)", answer: "varied" },
+      { hint: "różny (odmienny)", answer: "diverse" },
+
+      { hint: "porządny (człowiek)", answer: "decent" },
+      { hint: "porządny (np. wykonanie)", answer: "solid" },
+
+      { hint: "cudowny (wspaniały)", answer: "wonderful" },
+      { hint: "cudowny (magiczny)", answer: "miraculous" },
+
+      { hint: "przyglądać się (uważnie)", answer: "observe" },
+      { hint: "przyglądać się (z ciekawością)", answer: "watch closely" },
+      { hint: "przyglądać się (z zainteresowaniem)", answer: "look at with interest" },
+
+      { hint: "przeznaczony", answer: "intended" },
+      { hint: "przeznaczony (w kontekście losu)", answer: "destined" },
+
+      { hint: "zmiażdżony", answer: "crushed" },
+
+      { hint: "pod spodem", answer: "underneath" },
+
+      { hint: "zachwycony", answer: "delighted" },
+
+      { hint: "oświadczyć się", answer: "propose (marriage)" },
+
+      { hint: "skarżyć się", answer: "complain" },
+
+      { hint: "polegać (na czymś)", answer: "rely (on)" },
+
+      { hint: "wytrzymać", answer: "withstand" },
+      { hint: "wytrzymać (w kontekście cierpienia)", answer: "endure" },
+
+      { hint: "strasznie", answer: "terribly" },
+
+      { hint: "wyjątkowo", answer: "exceptionally" },
+      { hint: "wyjątkowo (w kontekście intensywności)", answer: "extremely" },
+
+      { hint: "pochopnie", answer: "hastily" },
+
+      { hint: "ledwie", answer: "barely" },
+
+      { hint: "zmyślony (na przykład historia)", answer: "made up" },
+
+      { hint: "poradzić sobie (np. z egzaminem)", answer: "to manage" },
+
+      { hint: "zupełnie", answer: "completely" },
+
+      { hint: "informacja", answer: "a piece of information" },
+
+      { hint: "gruby (przedmiot, materiał)", answer: "thick" },
+
+      { hint: "wrażliwy", answer: "sensitive" },
+
+      { hint: "głośny (w kontekście hałasu)", answer: "noisy" },
+      { hint: "głośny (w kontekście głośności)", answer: "loud" },
+
+      { hint: "prosta droga", answer: "straight road" },
+
+      { hint: "tępy", answer: "blunt" },
+      { hint: "bezpośredni (w kontekście wypowiedzi)", answer: "blunt" },
+
+      { hint: "burzliwy", answer: "stormy" },
+
+      { hint: "kazać", answer: "order" },
+      { hint: "kazać (w kontekście mówienia komuś)", answer: "tell (someone to do something)" },
+
+      { hint: "odpowiedzieć", answer: "reply" },
+
+      { hint: "wchodzić do budynku", answer: "enter a building" },
+
+      { hint: "świt", answer: "dawn" },
+
+      { hint: "jeździć na nartach", answer: "to ski" },
+
+      { hint: "gromadzić się", answer: "gather" },
+
+      { hint: "tuż przed", answer: "just before" },
+
+      { hint: "woleć", answer: "prefer" },
+
+      { hint: "obawiać się", answer: "be afraid" },
+      { hint: "przestraszony", answer: "afraid" },
+
+      { hint: "obrazek", answer: "picture" },
+      { hint: "rysunek", answer: "drawing" },
+
+      { hint: "poprosił żebym…", answer: "asked me to" },
+      { hint: "zażądał żebym…", answer: "demanded me to" },
+
+      { hint: "podczas gdy", answer: "while" },
+
+      { hint: "ponieważ", answer: "because" },
+
+      { hint: "podczas", answer: "during" },
+
+      { hint: "rama obrazu", answer: "picture frame" },
+
+      { hint: "podróżować", answer: "travel" },
+
+      { hint: "zamiast", answer: "instead of" },
+
+      { hint: "nagle", answer: "suddenly" },
+
+      { hint: "cicho", answer: "quietly" },
+
+      { hint: "nadal", answer: "still" },
+      { hint: "wciąż", answer: "still" },
+
+      { hint: "w końcu", answer: "finally" },
+
+      { hint: "być może", answer: "perhaps" },
+
+      { hint: "chociaż", answer: "although" },
+
+      { hint: "raczej", answer: "rather" },
+
+      // poziom 4
+      
+  { hint: "potomek", answer: "descendant" },
+
+  { hint: "trumna", answer: "coffin" },
+
+  { hint: "niewiadoma (w kontekście matematycznym)", answer: "unknown" },
+  { hint: "niewiadoma (w kontekście sytuacji)", answer: "uncertainty" },
+
+  { hint: "zawartość", answer: "contents" },
+
+  { hint: "przewóz (w kontekście transportu)", answer: "transport" },
+  { hint: "przewóz (w kontekście przewożenia osób)", answer: "carriage" },
+
+  { hint: "klatka schodowa", answer: "staircase" },
+
+  { hint: "krwotok", answer: "hemorrhage" },
+
+  { hint: "wjazd (w kontekście wejścia)", answer: "entrance" },
+  { hint: "wjazd (w kontekście drogi do posesji)", answer: "driveway" },
+
+  { hint: "notowanie (w kontekście giełdy)", answer: "quotation" },
+  { hint: "notowanie (w kontekście listy rankingowej)", answer: "listing" },
+
+  { hint: "możliwość", answer: "possibility" },
+
+  { hint: "zakład krawiecki", answer: "tailor's shop" },
+
+  { hint: "wprowadzać zmiany", answer: "introduce changes" },
+
+  { hint: "właściwy (w kontekście odpowiedni)", answer: "appropriate" },
+  { hint: "właściwy (w kontekście zgodny z zasadami)", answer: "proper" },
+
+  { hint: "podobnie", answer: "similarly" },
+
+  { hint: "cudowny (w kontekście działania cudów)", answer: "miraculous" },
+  { hint: "cudowny (w kontekście zachwytu)", answer: "wonderful" },
+
+  { hint: "oburzyć się (w kontekście urażenia)", answer: "take offense" },
+  { hint: "oburzyć się (w kontekście gniewu)", answer: "be indignant" },
+
+  { hint: "przepisowy (w kontekście zgodny z przepisami)", answer: "regulatory" },
+  { hint: "przepisowy (w kontekście wymagany)", answer: "prescribed" },
+
+  { hint: "materialny (w kontekście finansowym)", answer: "financial" },
+  { hint: "materialny (w kontekście pieniężnym)", answer: "monetary" },
+
+  { hint: "zbity z tropu (w kontekście zagubienia)", answer: "confused" },
+  { hint: "zbity z tropu (w kontekście zdziwienia)", answer: "puzzled" },
+
+  { hint: "stwierdzać że", answer: "state that" },
+
+  { hint: "ostatecznie", answer: "ultimately" },
+
+  { hint: "sprawiać że", answer: "make" },
+
+  { hint: "powitać", answer: "welcome" },
+
+  { hint: "zawierać umowę", answer: "sign a contract" },
+
+  { hint: "stać na coś", answer: "afford" },
+
+  { hint: "pochylić się", answer: "bend down" },
+
+  { hint: "wyjaśniać", answer: "explain" },
+
+  { hint: "podchodzić (w kontekście zbliżania się)", answer: "approach" },
+  { hint: "podchodzić (w kontekście podchodzenia do egzaminu)", answer: "take (an exam)" },
+
+  { hint: "dawać przykład", answer: "set an example" },
+
+  { hint: "odprowadzać do drzwi", answer: "see (someone) to the door" },
+
+  { hint: "towarzyszyć", answer: "accompany" },
+
+  { hint: "wynajmować", answer: "rent" },
+
+  { hint: "zmniejszać", answer: "reduce" },
+
+  { hint: "brać pod uwagę (w kontekście uwzględniania)", answer: "take into account" },
+  { hint: "brać pod uwagę (w kontekście rozważania)", answer: "consider" },
+
+  { hint: "obejrzeć ranę", answer: "examine a wound" },
+
+  { hint: "ukazać się", answer: "appear" },
+
+  { hint: "zarobić dodatkowo", answer: "earn extra" },
+
+  { hint: "zsiąść (w kontekście z konia)", answer: "dismount" },
+  { hint: "zsiąść (w kontekście z pojazdu)", answer: "get off" },
+
+  { hint: "zastanawiać się (w kontekście ciekawości)", answer: "wonder" },
+  { hint: "zastanawiać się (w kontekście rozważania)", answer: "consider" },
+
+  { hint: "doczekać", answer: "live to see" },
+
+  { hint: "polecić (w kontekście rekomendacji)", answer: "recommend" },
+  { hint: "polecić (w kontekście sugestii)", answer: "suggest" },
+
+  { hint: "odprowadzać", answer: "escort" },
+
+  { hint: "odsunąć", answer: "push aside" },
+
+  { hint: "pociągnąć za sobą (w kontekście konsekwencji)", answer: "entail" },
+  { hint: "pociągnąć za sobą (w kontekście fizycznym)", answer: "bring along" },
+
+  { hint: "dorobić się", answer: "make a fortune" },
+
+  { hint: "oszaleć", answer: "go crazy" },
+
+  { hint: "trafić do szpitala", answer: "end up in the hospital" },
+
+  { hint: "zadziałać (w kontekście wpływu)", answer: "have an effect on" },
+
+  { hint: "potwierdzać", answer: "confirm" },
+
+  { hint: "okazać się", answer: "turn out" },
+  { hint: "okazać się (w kontekście tożsamości)", answer: "turn out to be" },
+
+  { hint: "dojść do siebie", answer: "recover" },
+
+  { hint: "opuścić (na przykład przesłonę)", answer: "lower" },
+
+  { hint: "ukryć", answer: "hide" },
+
+  { hint: "kazać (w kontekście rozkazu)", answer: "order" },
+  { hint: "kazać (w kontekście polecenia)", answer: "tell to do" },
+
+  { hint: "przetrwać", answer: "survive" },
+
+  { hint: "pobrać się", answer: "get married" },
+
+  { hint: "rozwijać się", answer: "develop" },
+
+  { hint: "wprowadzać", answer: "introduce" },
+
+  { hint: "wykład", answer: "lecture" },
+
+  { hint: "odłożyć (np. książkę)", answer: "put it down" },
+
+  { hint: "burzliwy", answer: "stormy" },
+
+  { hint: "podróżowanie", answer: "travelling" },
+
+  { hint: "opuścić (w kontekście wyjścia)", answer: "leave" },
+  { hint: "wyjść (w kontekście opuszczenia miejsca)", answer: "go out" },
+
+  { hint: "farby akwarelowe", answer: "watercolor paints" },
+
+  { hint: "dotyczyć (w kontekście tematu)", answer: "concern" },
+  { hint: "dotyczyć (w kontekście relacji)", answer: "relate to" },
+
+  { hint: "różny (wieloraki)", answer: "various" },
+
+  { hint: "dotychczasowy", answer: "so far" },
+
+  { hint: "zajęcia akademickie (w kontekście kursów)", answer: "courses" },
+  { hint: "zajęcia akademickie (w kontekście lekcji)", answer: "classes" }
+
+    ];
+
+    let countdownInterval;
+    let audioCtx;
+    let noiseSource;
+
+    function speak(text, lang = 'pl-PL', callback) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang;
+      utterance.onend = () => {
+        if (callback) callback();
+      };
+      speechSynthesis.speak(utterance);
+    }
+
+    function playSilentWhiteNoise(duration = 5000) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const bufferSize = audioCtx.sampleRate * duration / 1000;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * 0.0001;
+      }
+      noiseSource = audioCtx.createBufferSource();
+      noiseSource.buffer = buffer;
+      const gainNode = audioCtx.createGain();
+      gainNode.gain.value = 0.0001;
+      noiseSource.connect(gainNode).connect(audioCtx.destination);
+      noiseSource.start();
+      setTimeout(() => {
+        noiseSource.stop();
+        audioCtx.close();
+      }, duration);
+    }
+
+    function getRandomWord() {
+      return words[Math.floor(Math.random() * words.length)];
+    }
+
+    function startCycle() {
+      document.getElementById('startBtn').style.display = 'none';
+      nextWord();
+    }
+
+    function nextWord() {
+      clearInterval(countdownInterval);
+      speechSynthesis.cancel();
+      document.getElementById('answer').textContent = '';
+      const word = getRandomWord();
+      document.getElementById('hint').textContent = word.hint;
+
+      speak(word.hint, 'pl-PL', () => {
+        let seconds = 5;
+        document.getElementById('countdown').textContent = `⏳ ${seconds}s`;
+        countdownInterval = setInterval(() => {
+          seconds--;
+          document.getElementById('countdown').textContent = `⏳ ${seconds}s`;
+          if (seconds <= 0) {
+            clearInterval(countdownInterval);
+          }
+        }, 1000);
+
+        playSilentWhiteNoise(5000);
+        setTimeout(() => {
+          document.getElementById('answer').textContent = word.answer;
+          speak(word.answer, 'en-US', () => {
+            setTimeout(nextWord, 1000);
+          });
+        }, 5000);
+      });
+    }
+  </script>
+</body>
+</html>
